@@ -7,6 +7,7 @@ const Score = require("../models/Score.model");
 exports.submitScore = async (req, res) => {
   try {
     const { score } = req.body;
+console.log(score);
 
     if (!score || score < 0)
       return res.status(400).json({ msg: "Invalid score" });
@@ -15,7 +16,7 @@ exports.submitScore = async (req, res) => {
       user: req.user.id,
       score,
     });
-
+console.log(newScore);
     await newScore.save();
 
     res.status(201).json({ msg: "Score submitted successfully", newScore });
@@ -29,7 +30,7 @@ exports.submitScore = async (req, res) => {
 exports.getTopScores = async (req, res) => {
   try {
     const topScores = await Score.find()
-      .populate("user", "username -_id") // show only username
+      .populate("user", "name -_id") // show only username
       .sort({ score: -1 })               // highest first
       .limit(10)                         // only top 10
       .select("score user date -_id");   // hide internal _id
@@ -58,10 +59,11 @@ exports.getMyScores = async (req, res) => {
 exports.getAllScores = async (req, res) => {
   try {
    const allScores = await Score.find()
-  .populate("user", "username -_id")
+  .populate("user", "name -_id")
   .sort({ score: -1 })
   .select("score user date -_id")
-    res.json(allScores);
+  console.log(allScores)
+    return res.json(allScores);
   } catch (error) {
     res.status(500).json({ msg: "Server error", error: error.message });
   }
